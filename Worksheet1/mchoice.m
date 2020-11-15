@@ -61,10 +61,28 @@ end
 % --- prediction policy 1 ---
 
 %%% Fill in this function! [WS exercise a)]
-function next = predict1()
-% predict player next move
+function next = predict1(j,transm)
 
-next = []; % This is a dummy function
+    transm %%print transition matrix
+    r = rand; %%genearate sample from uniform probability distribution
+    
+    global param_a param_b;
+  
+    if (r < param_a)
+    % probability of param_a
+        hnext = mod(j,3)+1;
+    
+    elseif (r < param_b)
+    % probability of param_b - param_a
+        hnext = mod(j+1,3)+1;
+    
+    else
+    % probability of 1- param_b
+        hnext = j;
+    end
+    
+% predict player next move
+next = winchoice(hnext); 
 % HINT: The function should look similar to predict2 and predict3 below
 
 
