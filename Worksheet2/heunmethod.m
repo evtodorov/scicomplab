@@ -3,7 +3,8 @@ n=tend/dt+1;
 y=zeros(n,1);%Initialize output vector
 
 y1=yo;
-for t=1: n
+y(1,1)=y1;
+for t=2:n
     fP1=feval(fP,y1);%calculate f'(y1)
     y2euler=y1+dt*fP1;%Use Euler method to calculate Y2
     fP2=feval(fP,y2euler);%calculate f'(y2) 
