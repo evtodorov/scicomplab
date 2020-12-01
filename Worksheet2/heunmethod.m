@@ -1,7 +1,7 @@
 function y =heun(fP,yo,dt,tend)
+n=tend/dt+1;
+y=zeros(n,1);%Initialize output vector
 
-y=zeros(tend/dt,1);%Initialize output vector
-n=tend/dt;
 y1=yo;
 for t=1: n
     fP1=feval(fP,y1);%calculate f'(y1)
@@ -11,6 +11,7 @@ for t=1: n
     y1=y2heun;%set y1=y2
     y(t,1)=y1;%add y1 to vector
     
- end
+end
+ y=y';
 end
 

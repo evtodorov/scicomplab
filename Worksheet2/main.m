@@ -22,7 +22,7 @@ for sol=1:length(solvers)
         tab(i,2) = {e};
         i = i+1;
     end
-    legend(['analytical' string(time_steps)],'location','southeast');
+    legend(['analytical', string(time_steps)],'location','southeast');
     hold off;
     tab
 end
