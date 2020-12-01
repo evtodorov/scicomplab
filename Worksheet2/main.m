@@ -1,7 +1,7 @@
 %setup
-solvers = {@RungeKutta};
+solvers = {@heunmethod};
 time_steps = [1, 0.5, 0.25, 1./8];
-fp = @(t,p) (1.-p/10.)*p;
+fp = @(p) (1.-p/10.)*p;
 tend = 5;
 p0 = 1;
 
