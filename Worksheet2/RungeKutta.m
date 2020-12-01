@@ -11,7 +11,7 @@ for i=2:length(ts)
     Y1 = fy(yn);
     Y2 = fy(yn+Y1*dt/2.);
     Y3 = fy(yn+Y2*dt/2.);
-    Y4 = fy(yn+Y3*dt/2.);
+    Y4 = fy(yn+Y3*dt);
     yhat(i) = yhat(i-1) + dt*(Y1+2*Y2+2*Y3+Y4)/6.;
 end
 
