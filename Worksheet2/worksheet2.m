@@ -1,5 +1,6 @@
 %setup
 solvers = {@ExplicitEuler, @heunmethod, @RungeKutta};
+solnames = ["Explicit Euler" "Heun" "Runge-Kutta"];
 time_steps = [1./8, 0.25, 0.5, 1];
 time_steps = sort(time_steps);
 fp = @(p) (1.-p/10.)*p;
@@ -43,9 +44,12 @@ for sol=1:length(solvers)
     end
     
     %make the plot pretty
+    title(solnames(sol))
+    xlabel("t"); ylabel("p");
     legend(['analytical', string(time_steps)],'location','southeast');
     hold off;
     
     %print the table
+    solnames(sol)
     tab
 end
