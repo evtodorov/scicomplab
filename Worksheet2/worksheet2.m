@@ -10,9 +10,10 @@ p0 = 1;
 %for each solver implemented
 for sol=1:length(solvers)
     % setup table
-    tab = table('Size',[4,4],...
-                'VariableTypes',["double" "double" "double" "double"],...
-                'VariableNames',["dt" "error" "error red." "error app."]);
+    tab = table('Size',[3,length(time_steps)+1],...
+                'VariableTypes',["string" repmat(["double"],1,length(time_steps))],...
+                'VariableNames', ["dt" string(time_steps)]);
+    tab(:,1) = [ {"error"}; {"error red."}; {"error app."}];
     %plot the analytical solution 
     figure; 
     plot(0:0.01:tend, pexact(0.01, tend),'k');
@@ -35,10 +36,9 @@ for sol=1:length(solvers)
         eold = e;
         e = approximationError(yhat, pexact(dt,tend), dt, tend);
         ehat = approximationError(yhat, pkbest(1:2^(i-1):end), dt, tend);
-        tab(i,1) = {dt};
-        tab(i,2) = {e};
-        tab(i,3) = {eold/e};
-        tab(i,4) = {ehat};
+        tab(1, i+1) = {e};
+        tab(2, i+1) = {e/eold};
+        tab(3, i+1) = {ehat};
         
         i = i+1; %increment time step
     end
