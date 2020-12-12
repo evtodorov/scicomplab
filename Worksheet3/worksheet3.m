@@ -1,9 +1,12 @@
+clear;clc;
 %setup
-solvers = {@ExplicitEuler, @heunmethod};
-solnames = ["Explicit Euler" "Heun" "Runge-Kutta"];
+solvers = {@ExplicitEuler, @heunmethod @ImplicitEuler};
+solnames = ["Explicit Euler" "Heun" "Implicit Euler"];
 time_steps = [1./32,1./16,1./8, 0.25, 0.5];
 time_steps = sort(time_steps);
 fp = @(p) 7*(1.-p/10.)*p;
+dfpdp = @(p) 7*(1.-p/5.);
+
 tend = 5;
 p0 = 20;
 
@@ -13,7 +16,7 @@ for sol=1:length(solvers)
     tab = table('Size',[3,length(time_steps)+1],...
                 'VariableTypes',["string" repmat(["double"],1,length(time_steps))],...
                 'VariableNames', ["dt" string(flip(time_steps))]);
-    tab(:,1) = [ {"error"}; {"error red."}; {"error app."}];
+    tab(:,1) = [ {"error"}; {"error red."}; {"tmax"};];
     %plot the analytical solution 
     figure; 
     plot(0:0.01:tend, pexact(0.01, tend),'k');
@@ -22,11 +25,12 @@ for sol=1:length(solvers)
     i = 1; %count timesteps
     
     % calculate solution for dt=1/16 (needed for error reduction)
-    yhat = solvers{sol}(fp,p0,min(time_steps)/2.,tend);
-    e = approximationError(yhat, pexact(min(time_steps)/2,tend), min(time_steps)/2, tend);
+    yhat = solvers{sol}(fp,dfpdp,p0,min(time_steps)/2.,tend);
+    tsolved = min(time_steps)/2*(length(yhat)-1); %maximum time for which solution is available
+    e = approximationError(yhat, pexact(min(time_steps)/2,tsolved), min(time_steps)/2, tsolved);
     
     for dt=time_steps
-        yhat = solvers{sol}(fp,p0,dt,tend); %solve ODE
+        yhat = solvers{sol}(fp,dfpdp,p0,dt,tend); %solve ODE
         if dt==min(time_steps) %to calculate the approximate error
             pkbest = yhat;
         end
@@ -35,11 +39,11 @@ for sol=1:length(solvers)
         
         %fill table for this timestep
         eold = e;
-        e = approximationError(yhat, pexact(dt,tend), dt, tend);
-        ehat = approximationError(yhat, pkbest(1:2^(i-1):end), dt, tend);
+        tsolved = dt*(length(yhat)-1); %maximum time for which solution is available
+        e = approximationError(yhat, pexact(dt,tsolved), dt, tsolved);
         tab(1, end-i+1) = {e};
         tab(2, end-i+1) = {e/eold};
-        tab(3, end-i+1) = {ehat};
+        tab(3, end-i+1) = {tsolved};
         
         i = i+1; %increment time step
     end
@@ -48,7 +52,7 @@ for sol=1:length(solvers)
     title(solnames(sol))
     xlabel("t"); ylabel("p");
     legend(['analytical', string(time_steps)],'location','southeast');
-    ylim([0 p0]);
+    ylim([0 10]);
     xlim([0 tend]);
     hold off;
     

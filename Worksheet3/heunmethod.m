@@ -1,4 +1,4 @@
-function y =heun(fP,yo,dt,tend)
+function y =heun(fP,dfydy,yo,dt,tend)
 n=tend/dt+1;
 y=zeros(n,1);%Initialize output vector
 

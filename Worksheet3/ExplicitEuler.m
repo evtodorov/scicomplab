@@ -1,7 +1,6 @@
-function yhat = ExplicitEuler(fy,y0,dt,tend)
-
+function yhat = ExplicitEuler(fy,dfydy,y0,dt,tend)
 %ExplicitEuler Implement Explicit Euler method
-%   Detailed explanation goes here
+
 ts = 0:dt:tend;
 yhat = zeros(1,length(ts));
 yhat(1) = y0;
