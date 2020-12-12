@@ -36,9 +36,9 @@ for sol=1:length(solvers)
         eold = e;
         e = approximationError(yhat, pexact(dt,tend), dt, tend);
         ehat = approximationError(yhat, pkbest(1:2^(i-1):end), dt, tend);
-        tab(1, length(time_steps)-i+1) = {e};
-        tab(2, length(time_steps)-i+1) = {e/eold};
-        tab(3, length(time_steps)-i+1) = {ehat};
+        tab(1, end-i+1) = {e};
+        tab(2, end-i+1) = {e/eold};
+        tab(3, end-i+1) = {ehat};
         
         i = i+1; %increment time step
     end
