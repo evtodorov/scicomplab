@@ -1,11 +1,11 @@
 %setup
-solvers = {@ExplicitEuler, @heunmethod, @RungeKutta};
+solvers = {@ExplicitEuler, @heunmethod};
 solnames = ["Explicit Euler" "Heun" "Runge-Kutta"];
-time_steps = [1./8, 0.25, 0.5, 1];
+time_steps = [1./32,1./16,1./8, 0.25, 0.5];
 time_steps = sort(time_steps);
-fp = @(p) (1.-p/10.)*p;
+fp = @(p) 7*(1.-p/10.)*p;
 tend = 5;
-p0 = 1;
+p0 = 20;
 
 %for each solver implemented
 for sol=1:length(solvers)
@@ -32,6 +32,7 @@ for sol=1:length(solvers)
         end
         plot(0:dt:tend,yhat,'--'); %plot for this timestep
         
+        
         %fill table for this timestep
         eold = e;
         e = approximationError(yhat, pexact(dt,tend), dt, tend);
@@ -47,6 +48,8 @@ for sol=1:length(solvers)
     title(solnames(sol))
     xlabel("t"); ylabel("p");
     legend(['analytical', string(time_steps)],'location','southeast');
+    ylim([0 p0]);
+    xlim([0 tend]);
     hold off;
     
     %print the table
