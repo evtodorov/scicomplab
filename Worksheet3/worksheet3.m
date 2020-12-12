@@ -52,7 +52,7 @@ for sol=1:length(solvers)
     title(solnames(sol))
     xlabel("t"); ylabel("p");
     legend(['analytical', string(time_steps)],'location','southeast');
-    ylim([0 10]);
+    ylim([0 p0]);
     xlim([0 tend]);
     hold off;
     
