@@ -1,10 +1,10 @@
 clear;clc;
 %setup
 solvers = {@ExplicitEuler, @heunmethod @ImplicitEuler ...
-           @AMLinear2... only fp = @(p) 7*(1.-p/10.)*p; p0=20;
+           @AMLinear1, @AMLinear2... only fp = @(p) 7*(1.-p/10.)*p; p0=20;
            };
 solnames = ["Explicit Euler" "Heun" "Implicit Euler" ...
-            "Adams-Moulton - linerisation 2"... only fp = @(p) 7*(1.-p/10.)*p; p0=20;
+            "Adams-Moulton - linerisation 1" "Adams-Moulton - linerisation 2"... only fp = @(p) 7*(1.-p/10.)*p; p0=20;
             ];
 time_steps = [1./32,1./16,1./8, 0.25, 0.5];
 time_steps = sort(time_steps);
