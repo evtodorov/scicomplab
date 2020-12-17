@@ -1,7 +1,11 @@
 clear;clc;
 %setup
-solvers = {@ExplicitEuler, @heunmethod @ImplicitEuler};
-solnames = ["Explicit Euler" "Heun" "Implicit Euler"];
+solvers = {@ExplicitEuler, @heunmethod @ImplicitEuler ...
+           @AMLinear2... only fp = @(p) 7*(1.-p/10.)*p; p0=20;
+           };
+solnames = ["Explicit Euler" "Heun" "Implicit Euler" ...
+            "Adams-Moulton - linerisation 2"... only fp = @(p) 7*(1.-p/10.)*p; p0=20;
+            ];
 time_steps = [1./32,1./16,1./8, 0.25, 0.5];
 time_steps = sort(time_steps);
 fp = @(p) 7*(1.-p/10.)*p;
@@ -13,10 +17,10 @@ p0 = 20;
 %for each solver implemented
 for sol=1:length(solvers)
     % setup table
-    tab = table('Size',[3,length(time_steps)+1],...
+    tab = table('Size',[4,length(time_steps)+1],...
                 'VariableTypes',["string" repmat(["double"],1,length(time_steps))],...
                 'VariableNames', ["dt" string(flip(time_steps))]);
-    tab(:,1) = [ {"error"}; {"error red."}; {"tmax"};];
+    tab(:,1) = [ {"error"}; {"error red."}; {"tmax"}; {"stable"}];
     %plot the analytical solution 
     figure; 
     plot(0:0.01:tend, pexact(0.01, tend),'k');
@@ -24,7 +28,7 @@ for sol=1:length(solvers)
    
     i = 1; %count timesteps
     
-    % calculate solution for dt=1/16 (needed for error reduction)
+    % calculate solution for dt=1/64 (needed for error reduction)
     yhat = solvers{sol}(fp,dfpdp,p0,min(time_steps)/2.,tend);
     tsolved = min(time_steps)/2*(length(yhat)-1); %maximum time for which solution is available
     e = approximationError(yhat, pexact(min(time_steps)/2,tsolved), min(time_steps)/2, tsolved);
@@ -39,10 +43,17 @@ for sol=1:length(solvers)
         
         %fill table for this timestep
         eold = e;
-        tsolved = dt*(length(yhat)-1); %maximum time for which solution is available
         e = approximationError(yhat, pexact(dt,tsolved), dt, tsolved);
         tab(1, end-i+1) = {e};
         tab(2, end-i+1) = {e/eold};
+        
+        % (to-be-confirmed) - Stability - only for overdamped phenomena
+        %   count if the derivative of yhat changes sign more than once
+        stability = numel(find(diff(sign(diff(yhat))))) <= 1;
+        tab(4, end-i+1) = {stability};
+        
+        % (temporary) - Length of solution
+        tsolved = dt*(length(yhat)-1); %maximum time for which solution is available
         tab(3, end-i+1) = {tsolved};
         
         i = i+1; %increment time step
