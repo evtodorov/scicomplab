@@ -1,5 +1,5 @@
 function x = Newton(G,dGdx,x0,thres)
-%NEWTON Method calculates the roots of the input function 
+%NEWTON Method calculates the roots of the input function using interation
 % G is a function handle of the equation to solve 
 % dGdx is a function handle of the derivitive of G
 % x0 is the initial guess
