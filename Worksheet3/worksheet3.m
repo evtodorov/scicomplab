@@ -1,4 +1,4 @@
-clear;clc;
+close all;clear;clc;
 %setup
 solvers = {@ExplicitEuler, @heunmethod @ImplicitEuler @AdamsMoulton...
            @AMLinear1, @AMLinear2... only fp = @(p) 7*(1.-p/10.)*p; p0=20;
@@ -9,18 +9,21 @@ solnames = ["Explicit Euler" "Heun" "Implicit Euler" "Adams-Moulton" ...
 time_steps = [1./32,1./16,1./8, 0.25, 0.5];
 time_steps = sort(time_steps);
 fp = @(p) 7*(1.-p/10.)*p;
+critical_point = 10; %needed for stability check
 dfpdp = @(p) 7*(1.-p/5.);
 
 tend = 5;
 p0 = 20;
-
+tab_stability = table('Size',[length(time_steps),length(solnames)+1],...
+                'VariableTypes',["double" repmat(["string"],1,length(solnames))],...
+                'VariableNames', ["dt" solnames]);
 %for each solver implemented
 for sol=1:length(solvers)
     % setup table
-    tab = table('Size',[4,length(time_steps)+1],...
+    tab = table('Size',[2,length(time_steps)+1],...
                 'VariableTypes',["string" repmat(["double"],1,length(time_steps))],...
                 'VariableNames', ["dt" string(flip(time_steps))]);
-    tab(:,1) = [ {"error"}; {"error red."}; {"tmax"}; {"stable"}];
+    tab(:,1) = [ {"error"}; {"error red."};];
     %plot the analytical solution 
     figure; 
     plot(0:0.01:tend, pexact(0.01, tend),'k');
@@ -46,27 +49,22 @@ for sol=1:length(solvers)
         e = approximationError(yhat, pexact(dt,tsolved), dt, tsolved);
         tab(1, end-i+1) = {e};
         tab(2, end-i+1) = {e/eold};
-        
-        % (to-be-confirmed) - Stability - only for overdamped phenomena
-        %   count if the derivative of yhat changes sign more than once
-        %stability = numel(find(diff(sign(diff(yhat))))) <= 1;
-        %stabilityvec=zeros(tend);
-%         %for i=2:tend-1
-%             %if  sign(yhat(i))~= sign(yhat(i-1))&& yhat(i)-yhat(i-1)>1 
-%             stabilityvec(i)=1;
-%             end
-%         end
-%             if sum(stabilityvec)>=4
-%                stability= 0;
-%             else 
-%                 stability=1;
-%             end
-%       
-%         tab(4, end-i+1) = {stability};
-        
         % (temporary) - Length of solution
         tsolved = dt*(length(yhat)-1); %maximum time for which solution is available
-        tab(3, end-i+1) = {tsolved};
+        %tab(3, end-i+1) = {tsolved};
+        % Check for stability (simple criterion):
+        % Stable if local error of the current timestep (based on the 
+        % critical point) decreases in the last 1 second of simulation
+        stability = "";
+        if tsolved==tend
+            loce_lastsec = abs(yhat(end-ceil(1/dt):end) - 10);
+            if all(diff(loce_lastsec) <= 0)
+                stability = "X";
+            end
+            %tab(4, end-i+1) = {stability};
+        end
+        tab_stability(end-i+1, 1) = {dt};
+        tab_stability(end-i+1, sol+1) = {stability};
         
         i = i+1; %increment time step
     end
@@ -83,3 +81,4 @@ for sol=1:length(solvers)
     solnames(sol)
     tab
 end
+tab_stability
