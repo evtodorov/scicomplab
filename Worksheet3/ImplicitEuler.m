@@ -16,7 +16,7 @@ for i=2:length(ts)
     ynext = Newton(G, dGdy, yn, thres); 
     
     %Break the loop if Newton method diverges
-    if abs(ynext)==Inf
+    if isnan(ynext)
         divergent = 1;
         break
     end

@@ -5,12 +5,12 @@ function x = Newton(G,dGdx,x0,thres)
 % x0 is the initial guess
 %thres is the desired accuracy for the output
 iterations=50;
-%If the solution doesn't converge return infinity
-x=Inf;
+%If the solution doesn't converge return nan
+x=nan;
 for i = 1:iterations
   % Computes the next x value using Newton's method
   xi = x0 - G(x0)/dGdx(x0);
-  if abs(xi)==Inf
+  if abs(xi)==Inf || isnan(xi)
       break
   end
   if abs(xi - x0) <= thres    

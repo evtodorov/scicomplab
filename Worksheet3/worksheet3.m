@@ -50,19 +50,19 @@ for sol=1:length(solvers)
         % (to-be-confirmed) - Stability - only for overdamped phenomena
         %   count if the derivative of yhat changes sign more than once
         %stability = numel(find(diff(sign(diff(yhat))))) <= 1;
-        stabilityvec=zeros(tend);
-        for i=1:tend-1
-            if  sign(yhat(i))~= sign(yhat(i-1))&& yhat(i)-yhat(i-1)>1 
-            stabilityvec(i)=1
-            end
-        end
-            if sum(stabilityvec)>=4
-               stability= 0
-            else 
-                stability=1
-            end
-      
-        tab(4, end-i+1) = {stability};
+        %stabilityvec=zeros(tend);
+%         %for i=2:tend-1
+%             %if  sign(yhat(i))~= sign(yhat(i-1))&& yhat(i)-yhat(i-1)>1 
+%             stabilityvec(i)=1;
+%             end
+%         end
+%             if sum(stabilityvec)>=4
+%                stability= 0;
+%             else 
+%                 stability=1;
+%             end
+%       
+%         tab(4, end-i+1) = {stability};
         
         % (temporary) - Length of solution
         tsolved = dt*(length(yhat)-1); %maximum time for which solution is available
