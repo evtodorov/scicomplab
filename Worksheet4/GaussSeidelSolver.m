@@ -1,23 +1,52 @@
-function GaussSeidelSolver(Nx,Ny,b)
-b=zeros(nx*ny);
+function x = GaussSeidelSolver(Nx,Ny,b)
 hx=1/(Nx+1);
 hy=1/(Ny+1);
 %Initial Guesses
+x = zeros((Nx)*(Ny),1);
 
-X(i)=1
-X(i-(ny+2))=1
-X(i+(Ny+2))=1
-X(i*Ny+j+1)=1
-X(i*Ny+j+2)1
-
-%Solve the system of equations for each variable
-for i=1:(nx+2)*(ny+2)
-    x(i)=0;
-    X(i-(Ny+2))=b(i)*hx^2-X(i+(Ny+2))+ 2*X(i)-(X(i-1)-2*X(i)+X(i+1))/hy^2
-    X(i*2Ny)=b(i)(X(i*Ny)/hx^2+X(i*3Ny)
-    X(i*3Ny)=b(i)*hx/(
-    X(i*Ny+j)=b(i)*hx/(
-    X(i*Ny+j+1)=
-    X(i*Ny+j+2)=
+ax = (Nx+1)^2;
+ay = (Ny+1)^2;
+aa = -2/hx^2-2/hy^2;
+counter = 0;
+R = Inf;
+while R > 1e-4 && counter < 1e+6
+    for i=1:Nx*Ny    
+        remain = b(i);   
+        if rem(i,Ny)~=0 %top     
+            remain = remain - ay*x(i+1);
+        end
+        if rem(i,Ny)~=1 %bottom
+            remain = remain - ay*x(i-1);
+        end
+        if i <= (Nx-1)*Ny %left
+            remain = remain - ax*x(i+Ny);
+        end
+        if i > Ny % right
+            remain = remain - ax*x(i-Ny);
+        end
+        
+        x(i) = remain/aa;  
     end
+    s = 0;
+    for i=1:Nx*Ny    
+        remain = b(i);   
+        if rem(i,Ny)~=0 %top     
+            remain = remain - ay*x(i+1);
+        end
+        if rem(i,Ny)~=1 %bottom
+            remain = remain - ay*x(i-1);
+        end
+        if i <= (Nx-1)*Ny %left
+            remain = remain - ax*x(i+Ny);
+        end
+        if i > Ny % right
+            remain = remain - ax*x(i-Ny);
+        end
+        remain = remain - aa*x(i);
+        s = s + remain^2;
+    end
+    counter = counter + 1;
+    R = sqrt(s/(Nx*Ny));
+end
+
 end

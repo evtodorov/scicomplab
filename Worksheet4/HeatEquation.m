@@ -1,8 +1,8 @@
-function yhat = HeatEquation(Nx,Ny)
+function A = HeatEquation(Nx,Ny)
 %initialize A
 nx=Nx+2;
 ny=Ny+2;
-A=zeros(nx*ny,nx*ny);
+A=speye(nx*ny);
 %Define variables
 hx=1/(Nx+1);
 hy=1/(Ny+1);
@@ -18,12 +18,11 @@ hy=1/(Ny+1);
     
     for i=2:nx-1
     for j=2:ny-1
-    equation=(i-1)*ny+j;
-   A(equation,equation-1)=1/(hy^2);
-   A(equation,equation+1)=1/(hy^2);
-   A(equation,equation)=-2/(hx^2)-2/(hy^2);
-   A(equation,(i-2)*ny+j)=1/(hx^2);
-   A(equation,(i)*ny+j)=1/(hx^2);
+       equation=(i-1)*ny+j;
+       A(equation,equation-1)=1/(hy^2);
+       A(equation,equation+1)=1/(hy^2);
+       A(equation,equation)=-2/(hx^2)-2/(hy^2);
+       A(equation,(i-2)*ny+j)=1/(hx^2);
+       A(equation,(i)*ny+j)=1/(hx^2);
     end
-end
-A
+    end
