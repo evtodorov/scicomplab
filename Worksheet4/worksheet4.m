@@ -24,18 +24,35 @@ for i=1:length(N)
         T = A_full\c;
         t_full = toc;
         figure;
+        subplot(2,3,1)
         surf(X,Y,reshape(T,n+2,n+2));
-        figure;
+        title('Full matrix solution');
+        subplot(2,3,4)
         contour(X,Y,reshape(T,n+2,n+2));
         tic;
         T_sparse = A_sparse\c;
         t_sparse = toc;
+        subplot(2,3,2)
+        surf(X,Y,reshape(T_sparse,n+2,n+2));
+        title('Sparse matrix solution');
+        subplot(2,3,5)
+        contour(X,Y,reshape(T_sparse,n+2,n+2));
     end
     cc = -2*pi*pi*sin(pi*reshape(X(2:end-1,2:end-1),[],1))...
                  .*sin(pi*reshape(Y(2:end-1,2:end-1),[],1));
     tic;
     T_GS = GaussSeidelSolver(n,n,cc);
     t_GS = toc;
+    if i<6
+        T_GS_plot = zeros(n+2);
+        T_GS_plot(2:end-1,2:end-1) = reshape(T_GS,n,n);
+        subplot(2,3,3);
+        surf(X,Y,reshape(T_GS_plot,n+2,n+2));
+        title('Gaus-Seidel solution');
+        subplot(2,3,6);
+        contour(X,Y,reshape(T_GS_plot,n+2,n+2));
+        sgtitle(strcat('Nx = Ny = ', num2str(n)));
+    end
     if i>1 && i<6
         tab_full(1,i) = {t_full};
         tab_full(2,i) = {(n+2)^4};
