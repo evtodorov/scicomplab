@@ -1,28 +1,26 @@
 function A = HeatEquation(Nx,Ny)
-%initialize A
-nx=Nx+2;
-ny=Ny+2;
-A=speye(nx*ny);
-%Define variables
 hx=1/(Nx+1);
 hy=1/(Ny+1);
-%Create A matrix
-%for i=2:Nx+1
-    %for j=2:Ny+1
-    %A(i*Nx-Nx-1,j)=1/(hx^2);
-    %A(i,j)=-2/(hx^2)-2/(hy^2);
-    %A(i+1,j)=1/(hx^2);
-    %A(i,j-1)=1/(hy^2);
-    %A(i,j+1)=1/(hy^2);
-    %end
-    
-    for i=2:nx-1
-    for j=2:ny-1
-       equation=(i-1)*ny+j;
-       A(equation,equation-1)=1/(hy^2);
-       A(equation,equation+1)=1/(hy^2);
-       A(equation,equation)=-2/(hx^2)-2/(hy^2);
-       A(equation,(i-2)*ny+j)=1/(hx^2);
-       A(equation,(i)*ny+j)=1/(hx^2);
-    end
-    end
+main_diag = (-2/(hx^2)-2/(hy^2))*ones(Nx*Ny,1);
+y_diag_p = ones(Nx*Ny,1)/(hy*hy);
+y_diag_p(Ny+1:Ny:end)=0;
+y_diag_m = ones(Nx*Ny,1)/(hy*hy);
+y_diag_m(Ny:Ny:end)=0;
+x_diag = ones(Nx*Ny,1)/(hx*hx);
+
+%wihtout BC
+A = spdiags([x_diag, y_diag_m, main_diag, y_diag_p, x_diag],...
+            [ -Ny  ,   -1  ,     0    ,   1   ,    Ny  ],...
+            Nx*Ny, Nx*Ny);
+        
+%apply BC
+% for i=1:(Nx*Ny)
+%     if i < Nx*Ny && rem(i,Ny)==0 % @ top     
+%         A(i,i+1) = 0;
+%     end
+%     if i > 1 && rem(i,Ny)==1 % @ bottom
+%         A(i, i-1) = 0;
+%     end
+%     %left & right are taken care of by the size of the matrix
+% end
+end

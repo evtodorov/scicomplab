@@ -16,49 +16,73 @@ for i=1:length(N)
     n=N(i);
     %mesh
     [X,Y]=meshgrid(linspace(0,1,n+2),linspace(0,1,n+2));
+    x = reshape(X(2:end-1,2:end-1),[],1);
+    y = reshape(Y(2:end-1,2:end-1),[],1);
+    b = -2*pi*pi*sin(pi*x).*sin(pi*y);
+
+    %% create matrix
     A_sparse = HeatEquation(n,n);
     if i<6
+        %% Full
         A_full = full(A_sparse);
-        c = -2*pi*pi*sin(pi*reshape(X,[],1)).*sin(pi*reshape(Y,[],1));
         tic;
-        T = A_full\c;
+        T_full = A_full\b;
         t_full = toc;
+        
+        T_full_plot = zeros(n+2);
+        T_full_plot(2:end-1,2:end-1) = reshape(T_full,n,n);
         figure;
         subplot(2,3,1)
-        surf(X,Y,reshape(T,n+2,n+2));
+        surf(X,Y,reshape(T_full_plot,n+2,n+2));
         title('Full matrix solution');
         subplot(2,3,4)
-        contour(X,Y,reshape(T,n+2,n+2));
+        contour(X,Y,reshape(T_full_plot,n+2,n+2));
+        colorbar;
+        %% Sparse
         tic;
-        T_sparse = A_sparse\c;
+        T_sparse = A_sparse\b;
         t_sparse = toc;
+        
+        T_sparse_plot = zeros(n+2);
+        T_sparse_plot(2:end-1,2:end-1) = reshape(T_sparse,[n,n]);
         subplot(2,3,2)
-        surf(X,Y,reshape(T_sparse,n+2,n+2));
+        surf(X,Y,reshape(T_sparse_plot,n+2,n+2));
         title('Sparse matrix solution');
         subplot(2,3,5)
-        contour(X,Y,reshape(T_sparse,n+2,n+2));
+        contour(X,Y,reshape(T_sparse_plot,n+2,n+2));
+        colorbar;
     end
-    cc = -2*pi*pi*sin(pi*reshape(X(2:end-1,2:end-1),[],1))...
-                 .*sin(pi*reshape(Y(2:end-1,2:end-1),[],1));
+    %% Gauss Seidel
     tic;
-    T_GS = GaussSeidelSolver(n,n,cc);
+    T_GS = GaussSeidelSolver(n,n,b);
     t_GS = toc;
+    
     if i<6
         T_GS_plot = zeros(n+2);
-        T_GS_plot(2:end-1,2:end-1) = reshape(T_GS,n,n);
+        T_GS_plot(2:end-1,2:end-1) = T_GS;
         subplot(2,3,3);
         surf(X,Y,reshape(T_GS_plot,n+2,n+2));
         title('Gaus-Seidel solution');
         subplot(2,3,6);
         contour(X,Y,reshape(T_GS_plot,n+2,n+2));
+        colorbar;
         sgtitle(strcat('Nx = Ny = ', num2str(n)));
     end
+    %% Tables
     if i>1 && i<6
         tab_full(1,i) = {t_full};
-        tab_full(2,i) = {(n+2)^4};
+        % Full matrix is square matrix of size Nx*Ny x Nx*Ny
+        % storage for vector b is ignored for all methods
+        tab_full(2,i) = {n^4}; 
         tab_sparse(1,i) = {t_sparse};
-        tab_sparse(2,i) = {nnz(A_sparse)};
+        % Upper boundary for sparse matrix size assuming dictionary of keys
+        % storage with keys of type int64
+        % storage for vector b is ignored for all methods
+        tab_sparse(2,i) = {3*nnz(A_sparse)};
         tab_GS(1,i) = {t_GS};
+        % Gauss-Seidel storage is the size of the vector of unknowns 
+        % (not including constant storage for implementation)
+        % storage for vector b is ignored for all methods
         tab_GS(2,i) = {n*n};
     end
     error = approximationError(T_GS, n, n);
