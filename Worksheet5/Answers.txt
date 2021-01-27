@@ -1,0 +1,5 @@
+a) As t-> Inf we reach a steady state solution of T=0 over the whole domain.
+
+c) see EE_stability_table.png
+
+e) Yes. Implicit Euler solution are stable for t=1/64 for all spatial resolutions.
