@@ -3,9 +3,9 @@ function x = ImplicitEulerHeat(Nx,Ny, dt, b)
 %Input:
 %   grid sizes Nx, Ny
 %   time step δt,
-%   Temperature at the current time T0
+%   Temperature at the current time b
 %Output:
-%   Temperature at the next time T1
+%   Temperature at the next time x
 hx=1/(Nx+1);
 hy=1/(Ny+1);
 %Initial Guesses

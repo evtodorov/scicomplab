@@ -50,7 +50,7 @@ for t=[1,2,3,4]
             zlim([0 1]);
             if storeplots
                 myAxes=findobj(s,'Type','Axes');
-                exportgraphics(s,['plots/EE_t=' num2str(t/8)  name '.jpg']);
+                exportgraphics(s,['plots/EE_t=' num2str(t/8) '_'  name '.jpg']);
             end
         end
     end
